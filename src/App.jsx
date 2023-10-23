@@ -23,6 +23,7 @@ function App() {
   useEffect(() => {
     authService.getCurrentUser(login())
     //jb current user mil gya
+    //we know in this callback we get data
     .then((userData) =>{
       if(userData){
         dispatch(login({userData}))
@@ -34,12 +35,13 @@ function App() {
     .finally(() => setLoading(false))
   },[])
   //if loading false then fist statement execute other wise if true then null 
+  // this is called condition rendering
   return !loading ? (
     <div className='min-h-screen flex flex-wrap content-between bg-gray-400'>
       <div className='w-full block'>
         <Header />
         <main>
-          {/* <Outlet /> */}
+          <Outlet />
         </main>
         <Footer />
       </div>

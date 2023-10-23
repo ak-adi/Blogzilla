@@ -1,5 +1,5 @@
-import React, { Children, useEffect, useState } from 'react'
-import { UseSelector, useSelector } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import {  useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 //Authentication layout: It is a mechanism how to protect pages or routes, we know in auth there is status, but we are not protecting that

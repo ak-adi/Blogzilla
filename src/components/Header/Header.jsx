@@ -1,7 +1,7 @@
 import React from 'react'
 import { Container, Logo, LogoutBtn } from '../index'
 import { Link } from 'react-router-dom'
-import { UseSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
 function Header() {
@@ -11,10 +11,15 @@ function Header() {
     //when navigation bar created, then we have to make a array then loop on them
     const navItems = [
         {
+            name: 'About',
+            slug: "/",
+            active: !authStatus
+        },
+        {
             name: 'Home',
             //url
-            slug: "/",
-            active: true
+            slug: "/home",
+            active: authStatus
         },
         {
             name: "Login",
@@ -39,25 +44,25 @@ function Header() {
     ]
 
     return (
-        <header className='py-3 shadow bg-gray-500'>
+        <header className='py-3 shadow-xl bg-lime-700'>
             <Container>
                 <nav className='flex'>
                     <div className='mr-4'>
                         <Link to='/'>
-                            <Logo width ='70px' />
+                            <Logo />
                         </Link>
                     </div>
                     <ul className='flex ml-auto'>
-                        {navItems.map((item) => 
-                        item.active ? (
-                            //as these li will repeat, so we know we have write key
-                            <li key={item.name}>
-                                <button 
-                                onClick={() => navigate(item.slug)}
-                                className='inline-bock px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'
-                                >{item.name}</button>
-                            </li>
-                        ) : null
+                        {navItems.map((item) =>
+                            item.active ? (
+                                //as these li will repeat, so we know we have write key
+                                <li key={item.name}>
+                                    <button
+                                        onClick={() => navigate(item.slug)}
+                                        className={`font-black font-mono text-lg inline-block px-6 py-2 duration-200 hover:bg-lime-200 rounded-full`}
+                                    >{item.name}</button>
+                                </li>
+                            ) : null
                         )}
                         {/* //if authstatus is true then parantheis will display */}
                         {authStatus && (

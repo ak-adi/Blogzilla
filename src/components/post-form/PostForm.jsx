@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react'
-import { Button, Input, Select, RTE } from '../index'
+import { Button, InputForPost, Select, RTE } from '../index'
 import { useForm } from 'react-hook-form'
 import appwriteService from '../../appwrite/config'
 import { useNavigate } from 'react-router-dom'
-import { UseSelector, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 function PostForm({ post }) {
     //if we have to watch continuously monitor some form then we use watch
@@ -15,16 +15,16 @@ function PostForm({ post }) {
         defaultValues: {
             //for default value we want some information, and this information comes from in case user comes to add value or edit value, if come here to edit so we have to give default value
             //whoever call this form will pass these values
-            title: post?.title || '',
-            slug: post?.slug || '',
-            content: post?.content || '',
-            status: post?.status || 'active'
+            title: post?.title || "",
+            slug: post?.$id || "",
+            content: post?.content || "",
+            status: post?.status || "active"
         }
     })
 
     const navigate = useNavigate()
     //getting user data
-    const userData = useSelector(state => state.user.userData)
+    const userData = useSelector((state) => state.auth.userData)
 
     //now, when user submit the form, the data should be passed
     //now two cases: the post value is already there, if yes then update it
@@ -32,11 +32,11 @@ function PostForm({ post }) {
     const submit = async (data) => {
         if (post) {
             //for update , first we need to handle file
-            const file = data.image[0] ? appwriteService.uploadFile(data.image[0]) : null
+            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
 
             //now delete the old image
             if (file) {
-                appwriteService.deleteFile(post.featuredImage)
+                appwriteService.deleteFile(post.featuredImage);
             }
             //updating the post
             //we have to pass slug -which is the id for the post and other parameters
@@ -45,9 +45,9 @@ function PostForm({ post }) {
                 //all the other data will be spread like this
                 ...data,
                 //we have to override the image bcz we uploaded the image and we get the data 
-                featuredImage: file ? file.$id : undefined
-            }
-            )
+                featuredImage: file ? file.$id : undefined,
+            })
+
             if (dbPost) {
                 navigate(`/post/${dbPost.$id}`)
             }
@@ -58,15 +58,13 @@ function PostForm({ post }) {
             //now if we have have
             if (file) {
                 //getting the id of the file
-                const fileId = fiel.$id
-                data.featuredImage = fileId
+                const fileId = file.$id;
+                data.featuredImage = fileId;
                 const dbPost = await appwriteService.createPost({
                     //we spread the data, bcz when the form build- then there will be no userData
-                    ...data,
+                    ...data, userId: userData.$id });
                     //there is field of userId, then we have to give that from userData
-                    userId: userData.$id
 
-                })
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`)
                 }
@@ -76,42 +74,42 @@ function PostForm({ post }) {
 
     //we have to watch title and simultaneously generate slug value, and if user gives space then convert it into dash
     const slugTransform = useCallback((value) => {
-        if (value && typeof value === 'string') 
+        if (value && typeof value === "string")
             return value
-            .trim()
-            .toLowerCase()
-            //^ - negate => means not match this, - means range, \d means digits, \s means spaces, at the end + means apart from this add all
-            .replace(/^[a-zA-Z\d\s]+/g, '-')
-            //gloabally look spaces and replace that with -
-            .replace(/s/g, '-')
-        return ''
-     //In register, watch will be inserted in the title value    
+                .trim()
+                .toLowerCase()
+                //^ - negate => means not match this, - means range, \d means digits, \s means spaces, at the end + means apart from this add all
+                .replace(/[^a-zA-Z\d\s]+/g, "-")
+                //gloabally look spaces and replace that with -
+                .replace(/\s/g, "-")
+        return "";
+        //In register, watch will be inserted in the title value    
     }, [])
 
     useEffect(() => {
-        const subscription = watch((value,{name}) => {
+        const subscription = watch((value, { name }) => {
             if (name === 'title') {
-                setValue('slug', slugTransform(value.title,{shouldValidate:true}))
+                setValue('slug', slugTransform(value.title), { shouldValidate: true });
             }
         })
 
         return () => {
             //(memory management), in useeffect you call method, then how you will optimize that , so there store it in a variable , then in return in the callback unsubscribe that so that wo apne aap mai ghum kr na reh jaye
-            subscription.unsubscibe()
+            subscription.unsubscribe()
         }
-     //In register, watch will be inserted in the title value    
-    }, [])
+        //In register, watch will be inserted in the title value    
+    }, [watch,slugTransform,setValue])
 
     return (
         <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
             <div className="w-2/3 px-2">
-                <Input
+                <InputForPost
                     label="Title :"
                     placeholder="Title"
                     className="mb-4"
                     {...register("title", { required: true })}
                 />
-                <Input
+                <InputForPost
                     label="Slug :"
                     placeholder="Slug"
                     className="mb-4"
@@ -123,7 +121,7 @@ function PostForm({ post }) {
                 <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
             </div>
             <div className="w-1/3 px-2">
-                <Input
+                <InputForPost
                     label="Featured Image :"
                     type="file"
                     className="mb-4"

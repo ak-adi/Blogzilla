@@ -9,12 +9,10 @@ import { useForm } from "react-hook-form"
 function Login() {
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const { register, handleSummit } = useForm()
+    const { register, handleSubmit } = useForm()
     const { error, setError } = useState("")
     //method name we are giving is login not handlesummit bcz usage is different
     const login = async (data) => {
-        //when submission is starts, the error should be clean
-        setError("")
         //sending data
         try {
             //data is wrapper, the object should be send to appwrite
@@ -26,8 +24,10 @@ function Login() {
                 const userData = await authService.getCurrentUser()
                 //if we get the userdata then dispatch
                 //if we are calling login the status is true as defined in the method and then data is get
-                if (userData) dispatch(authLogin(userData))
+                if (userData) dispatch(authLogin(userData));
                 //now logged in then navigate the user
+                //by using navigate we can programatically navigate the user
+                //using link we have to click element to navigate
                 navigate("/")
             }
         } catch (error) {
@@ -35,12 +35,12 @@ function Login() {
         }
     }
     return (
-        <div className='flex items-center justify-center w-full'
+        <div className='flex items-center justify-center h-screen -mt-8'
         >
-            <div className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}>
+            <div className={`bg-white mx-auto w-full max-w-lg rounded-xl p-10 border border-black/10 justify center`}>
                 <div className='mb-2 flex justify-center'>
                     <span className='inline-block w-full max-w-[100px]'>
-                        <Logo width="100%" />
+                        <Logo />
 
                     </span>
 
@@ -59,11 +59,10 @@ function Login() {
                 actually jb form submit hoga to handlesubmit ek event hai toh call hoga*/}
                 {/* ye event isliye jarori hai kyunki jitne bhi aapke input fields hai waha pr doge, wha pr hum register ka use krte hai toh automatically jo values waha pr likhi hai unka state hume manage krni ki jarorat nhi hai wha se apne aap wo value pick karega aur handlesubmit hote waqt saari value le lega*/}
 
-                <form onSubmit={handleSummit(login)} className='mt-8'>
+                <form onSubmit={handleSubmit(login)} className='mt-8'>
                     <div className='space-y-5'>
                         <Input 
-                        label="Email: "
-                        placehoder="Enter your email"
+                        label=" Email "
                         type="email"
                         // kyunki hum use form use kr rhe yaha pr ek syntax hai
                         //yaha pe dotdotdot likhna jarori hai kyunki agar hum kisi  aur input pr bhi register use krte hai toh uski value overwrite ho jayegi, toh har bar spread krna hoga
@@ -77,8 +76,7 @@ function Login() {
                         } )}
                         />
                         <Input 
-                        label="Password"
-                        placehoder="Enter your password"
+                        label=" Password "
                         type="password"
                         {...register("password", {
                             required: true,
