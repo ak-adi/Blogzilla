@@ -19,46 +19,46 @@ export class AuthService {
         //destructuring object bcz when method pass object in which these value will be there
         try {
             //first we have to await for account creation
-            const userAccount = await this.account.create(ID.unique(), email, password, name)
+            const userAccount = await this.account.create(ID.unique(), email, password, name);
             //now checking if account is created or not
             if (userAccount) {
                 //call another method - if account created then login
-                return this.login({email,password})
+                return this.login({email,password});
             } else {
                 return userAccount;
             }
 
         } catch (error) {
-            throw error
+            throw error;
         }
     }
 
     async login({email,password}){
         try {
-            return await this.account.createEmailSession(email,password)
+            return await this.account.createEmailSession(email,password);
         } catch (error) {
-            throw error
+            throw error;
         }
     }
 
     //if user exist or not , suppose if sometries to enter home directly, in that case this function will help
     async getCurrentUser(){
         try {
-           return await this.account.get()
+           return await this.account.get();
 
         } catch (error) {
            console.log("Appwrite service :: getCurrentUser :: error", error);
         }
         //if user not found, we can do this using if-else also
         //if in try-catch any error occur then null returns 
-        return null
+        return null;
     }
 
     async logout(){
         try {
-               await this.account.deleteSessions()
+               await this.account.deleteSessions();
         } catch (error) {
-            console.log("Appwrite service :: getCurrentUser :: error", error);
+            console.log("Appwrite service :: logout :: error", error);
         }
      
     }

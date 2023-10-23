@@ -5,6 +5,7 @@ import { login } from '../store/authSlice'
 import { Button, Input, Logo } from './index'
 import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router-dom'
 
 function SignUp() {
     const navigate = useNavigate()
@@ -15,23 +16,23 @@ function SignUp() {
     const create = async (data) => {
         setError("")
         try {
-            const userData = await authService.createAccount(data)
-            if (userData) {
+            const session = await authService.createAccount(data)
+            if (session) {
                 const userData = await authService.getCurrentUser()
                 //now store udpate
                 if (userData) dispatch(login(userData));
                 navigate("/")
             }
         } catch (error) {
-            setError(error.message)
+            setError(error.message) 
         }
     }
     return (
-        <div className='flex items-center justify-center'>
+        <div className='flex items-center justify-center h-screen -mt-14'>
             <div className={`mx-auto w-full max-w-lg bg-gray-100 rounded-xl p-10 border border-black/10`}>
                 <div className='mb-2 flex justify-center'>
                     <span className='inline-block w-full max-w-[100px]'>
-                        <Logo width="100%" />
+                        <Logo />
                     </span>
                 </div>
                 <h2 className='text-center text-2xl font-bold leading-tight'>Sign up to create account
@@ -49,15 +50,13 @@ function SignUp() {
                 className='mt-8'>
                     <div className='space-y-5'>
                         <Input
-                        label="Name: "
-                        placeholder="Enter your full name"
+                        label=" Full Name "
                         {...register("name", {
                             required:true,
                         })}
                          />
                         <Input 
-                        label="Email: "
-                        placehoder="Enter your email"
+                        label=" Email "
                         type="email"
                         {...register("email", {
                             required: true,
@@ -68,8 +67,7 @@ function SignUp() {
                         } )}
                         />
                          <Input 
-                        label="Password"
-                        placehoder="Enter your password"
+                        label=" Password "
                         type="password"
                         {...register("password", {
                             required: true,

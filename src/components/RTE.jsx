@@ -9,7 +9,7 @@ export default function RTE({ name, control, label, defaultValue = "" }) {
         <div className='w-full'>
             {label && <label className='inline-block mb-1 pl-1'>{label}</label>}
             <Controller
-                name={name || "conten"}
+                name={name || "content"}
                 // parent which call this , this pass control from here to that parent, so that parent should event ,state, value, data in this 
                 control={control}
                 //now how to render elements

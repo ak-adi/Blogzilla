@@ -1,20 +1,21 @@
 import conf from '../conf/conf.js';
-import { Client, ID, Databases, Storage, Query} from "appwrite";
+import { Client, ID, Databases, Storage, Query } from "appwrite";
+import authService from './auth.js';
 
-export class Service{
+export class Service {
     client = new Client();
     databases;
-    bucket;
+    bucket; //storage
 
-    constructor(){
+    constructor() {
         this.client
-        .setEndpoint(conf.appwriteUrl)
-        .setProject(conf.appwriteProjectId);
-    this.databases = new Databases(this.client)
-    this.bucket = new Storage(this.client)
+            .setEndpoint(conf.appwriteUrl)
+            .setProject(conf.appwriteProjectId);
+        this.databases = new Databases(this.client)
+        this.bucket = new Storage(this.client)
     }
 
-    async createPost({title,slug,content,featuredImage,status,userId}){
+    async createPost({ title, slug, content, featuredImage, status, userId }) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseId,
@@ -28,14 +29,14 @@ export class Service{
                     userId
                 }
             )
-            
+
         } catch (error) {
             console.log("Appwrite service :: getCurrentUser :: error", error);
         }
     }
 
     //we have document id seprate, to find which document should be update
-    async updatePost(slug, {title,content,featuredImage,status}){
+    async updatePost(slug, { title, content, featuredImage, status }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseId,
@@ -45,15 +46,15 @@ export class Service{
                     title,
                     content,
                     featuredImage,
-                    status  
+                    status
                 }
             )
         } catch (error) {
-            
+
         }
     }
 
-    async deletePost(slug){
+    async deletePost(slug) {
         try {
             await this.databases.deleteDocument(
                 conf.appwriteDatabaseId,
@@ -69,7 +70,7 @@ export class Service{
     }
 
     //suppose we want to get one post
-    async getPost(slug){
+    async getPost(slug) { 
         try {
             return await this.databases.getDocument(
                 conf.appwriteDatabaseId,
@@ -77,14 +78,14 @@ export class Service{
                 slug
             )
         } catch (error) {
-            
+
             console.log("Appwrite service :: getCurrentUser :: error", error);
             return false
         }
     }
 
     //when we want to get all posts, but we want only those value whose status is active, we pass default parameter to get active post(key,value), we can pass enum also , we have to create indexes in appwrite to run queries
-    async getAllPost(queries = [Query.equal("status", "active")]){
+    async getAllPost(queries = [Query.equal("status", "active")]) {
         try {
             return await this.databases.listDocuments(
                 conf.appwriteDatabaseId,
@@ -100,7 +101,7 @@ export class Service{
     }
 
     //file upload services
-    async uploadFile(file){
+    async uploadFile(file) {
         try {
             return await this.bucket.createFile(
                 conf.appwriteBucketId,
@@ -108,14 +109,14 @@ export class Service{
                 ID.unique(),
                 //file
                 file
-                )
+            )
         } catch (error) {
-            console.log("Appwrite service :: getCurrentUser :: error", error); 
+            console.log("Appwrite service :: getCurrentUser :: error", error);
             return false
         }
     }
 
-    async deleteFile(fileId){
+    async deleteFile(fileId) {
         try {
             await this.bucket.deleteFile(
                 conf.appwriteBucketId,
@@ -123,13 +124,13 @@ export class Service{
             )
             return true
         } catch (error) {
-            console.log("Appwrite service :: getCurrentUser :: error", error); 
+            console.log("Appwrite service :: getCurrentUser :: error", error);
             return false
         }
     }
 
     //preview file , we can declare it without async bcz there is no promise in previewfile function in appwrite so the loading of data is already fast
-    getPreviewFile(fileId){
+    getFilePreview(fileId) {
         return this.bucket.getFilePreview(
             conf.appwriteBucketId,
             fileId
